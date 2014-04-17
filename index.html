@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+	
+	<button id="start-button">start</button>
+	
+	<script type="text/javascript">
+
+	
+		var asInputAccepter = function(options) {
+			
+			this.getPipe = function() {
+				
+				return {
+				
+					message : this.onInput
+				};
+			};
+		};
+		
+		var asOutputProvider = function(options) {
+		
+			this.fire = function() {
+			
+				for(var i=0; i<this._outputs.length; i++) {
+				
+					this._outputs[i].message();					
+				}
+			};
+		
+			this.pipeTo = function(obj){
+			
+				if(this._outputs.length >= options.number) {
+				
+					throw "The node already has " + options.number + " outputs";
+				}
+				
+				this._outputs.push(obj.getPipe());
+			};
+		};
+		
+		var asTimedOperation = function(options) {
+		
+			this.start = function() {
+				
+				this._timer = setInterval(this.onTrigger, options.period);				
+			};
+		};
+		
+
+		
+		
+		
+		
+		var Generator = function() {
+			
+			var self = this;
+			
+			this._timer;
+			
+			this._outputs = [];
+			
+			this.onTrigger = function() {
+			
+				self.fire();
+			};
+		}
+		
+		asOutputProvider.call(Generator.prototype, { number : 1 });	
+		
+		asTimedOperation.call(Generator.prototype, { period : 1000 });
+		
+		
+		
+		
+		
+		
+		var Generator2 = function() {
+			
+			var self = this;
+			
+			this._timer;
+			
+			this._outputs = [];
+			
+			this.onTrigger = function() {
+			
+				self.fire();
+			};
+		}	
+		
+		asTimedOperation.call(Generator2.prototype, { period : 750 });
+		
+		asOutputProvider.call(Generator2.prototype, { number : 1 });		
+		
+
+
+
+
+
+		
+		var Acceptor = function(name) {
+		
+			var self = this;
+		
+			this._outputs = [];
+			
+			this.onInput = function() {
+			
+				console.log('firing ' + name);
+				
+				self.fire();
+			};
+		}
+		
+		asOutputProvider.call(Acceptor.prototype, { number : 1 });		
+		
+		asInputAccepter.call(Acceptor.prototype, { number : 1 });		
+		
+		
+		
+		
+		
+		
+		var leaf = new Acceptor('leaf');
+		
+		var wire = new Acceptor('wire');
+		wire.pipeTo(leaf);
+
+		var gen = new Generator();
+		gen.pipeTo(wire);
+		gen.start();
+		//gen.fire();
+		
+		
+		
+		var gen2 = new Generator2();
+		gen2.pipeTo(leaf);
+		gen2.start();
+		
+		
+		document.getElementById('start-button').onclick = function() {
+		
+			gen.fire();
+		};
+		
+	</script>
+	
+	
+</body>
+</html>
