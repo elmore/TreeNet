@@ -35,7 +35,7 @@ var asTimedOperation = function(options) {
 
 	this.start = function() {
 		
-		this._timer = setInterval(this.onTrigger, options.period);				
+		this._timer = setInterval(this.onTrigger, this.period);				
 	};
 };
 

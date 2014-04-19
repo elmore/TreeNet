@@ -12,9 +12,11 @@
 	
 	<script type="text/javascript">
 		
-		var Generator = function() {
+		var Generator = function(period) {
 			
 			var self = this;
+			
+			this.period = period;
 			
 			this._timer;
 			
@@ -28,31 +30,9 @@
 		
 		asOutputProvider.call(Generator.prototype, { number : 1 });	
 		
-		asTimedOperation.call(Generator.prototype, { period : 1000 });
+		asTimedOperation.call(Generator.prototype, { });
 		
-		
-		
-		
-		
-		
-		var Generator2 = function() {
-			
-			var self = this;
-			
-			this._timer;
-			
-			this._outputs = [];
-			
-			this.onTrigger = function() {
-			
-				self.fire();
-			};
-		}	
-		
-		asTimedOperation.call(Generator2.prototype, { period : 750 });
-		
-		asOutputProvider.call(Generator2.prototype, { number : 1 });		
-		
+
 
 
 
@@ -89,14 +69,13 @@
 		var wire = new Acceptor('wire', 100, 200);
 		wire.pipeTo(leaf);
 
-		var gen = new Generator();
+		var gen = new Generator(1000);
 		gen.pipeTo(wire);
 		gen.start();
-		//gen.fire();
 		
 		
 		
-		var gen2 = new Generator2();
+		var gen2 = new Generator(750);
 		gen2.pipeTo(leaf);
 		gen2.start();
 		
