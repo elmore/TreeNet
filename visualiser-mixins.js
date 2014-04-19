@@ -1,6 +1,42 @@
 
-var asRenderableElement = function(options) {
 
+var asFunctionWrapper = function(options) {
+
+	this.setupEvents = function() {
+	
+		var self = this;
+		
+		for(p in self.wrappers) {
+		
+			if(this[p]) {
+			
+				var tmpF = this[p];
+				
+				var newF = self.wrappers[p];
+			
+				// wrap the function with our own so we 
+				// can add more stuff
+				this[p] = function() {
+					
+					newF.call(this);
+					
+					// need to inject the scope back in
+					tmpF.call(this);
+				};			
+			}
+		}
+	};
+};
+
+
+
+
+
+var asRenderableElement = function(options) {
+	
+	// seems to be a way of requiring other base functionality - sort 
+	// of a multiple inheritance thing. nice :)
+	asFunctionWrapper.call(this, {});
 
 	this.drawCircle = function(x, y, r) {
 		
@@ -16,27 +52,13 @@ var asRenderableElement = function(options) {
 		document.body.appendChild(this.el);
 	};
 
-	// wraps particular methods with extra functionality
-	this.setupEvents = function() {
-	
-		var self = this;
+	// these correspond to the methods of the instantiated object
+	// which we want to hook in to
+	this.wrappers = {
 		
-		for(var p in this) {
-		
-			if(p === 'fire') {
+		fire : function() {
 			
-				var tmpF = this[p];
-			
-				// wrap the function with our own so we 
-				// can add more stuff
-				this[p] = function() {
-					
-					self.flash();
-					
-					// need to inject the scope back in
-					tmpF.call(this);
-				};
-			}
+			this.flash();
 		}
 	};
 	
@@ -60,3 +82,4 @@ var asRenderableElement = function(options) {
 		this.setupEvents();
 	};
 };
+
