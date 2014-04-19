@@ -3,58 +3,14 @@
 <head>
 	<meta charset="UTF-8">
 	<title></title>
+	<script type="text/javascript" src="network-mixins.js"></script>
+	<script type="text/javascript" src="visualiser-mixins.js"></script>
 </head>
 <body>
 	
 	<button id="start-button">start</button>
 	
 	<script type="text/javascript">
-
-	
-		var asInputAccepter = function(options) {
-			
-			this.getPipe = function() {
-				
-				return {
-				
-					message : this.onInput
-				};
-			};
-		};
-		
-		var asOutputProvider = function(options) {
-		
-			this.fire = function() {
-			
-				for(var i=0; i<this._outputs.length; i++) {
-				
-					this._outputs[i].message();					
-				}
-			};
-		
-			this.pipeTo = function(obj){
-			
-				if(this._outputs.length >= options.number) {
-				
-					throw "The node already has " + options.number + " outputs";
-				}
-				
-				this._outputs.push(obj.getPipe());
-			};
-		};
-		
-		var asTimedOperation = function(options) {
-		
-			this.start = function() {
-				
-				this._timer = setInterval(this.onTrigger, options.period);				
-			};
-		};
-		
-
-		
-		
-		
 		
 		var Generator = function() {
 			
@@ -103,15 +59,17 @@
 
 
 		
-		var Acceptor = function(name) {
-		
+		var Acceptor = function(name, x, y) {
+				
 			var self = this;
+		
+			this.x = x;
+			this.y = y;
+			this.radius = 10;
 		
 			this._outputs = [];
 			
 			this.onInput = function() {
-			
-				console.log('firing ' + name);
 				
 				self.fire();
 			};
@@ -122,13 +80,13 @@
 		asInputAccepter.call(Acceptor.prototype, { number : 1 });		
 		
 		
+		asRenderableElement.call(Acceptor.prototype, { renderer : document });
 		
 		
 		
+		var leaf = new Acceptor('leaf', 100, 100);
 		
-		var leaf = new Acceptor('leaf');
-		
-		var wire = new Acceptor('wire');
+		var wire = new Acceptor('wire', 100, 200);
 		wire.pipeTo(leaf);
 
 		var gen = new Generator();
@@ -141,6 +99,14 @@
 		var gen2 = new Generator2();
 		gen2.pipeTo(leaf);
 		gen2.start();
+		
+		
+		
+		leaf.render();
+		wire.render();
+		
+		
+		console.log(leaf);
 		
 		
 		document.getElementById('start-button').onclick = function() {
