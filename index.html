@@ -12,9 +12,13 @@
 	
 	<script type="text/javascript">
 		
-		var Generator = function(period) {
+		var Generator = function(period, x, y) {
 			
 			var self = this;
+			
+			this.x = x;
+			this.y = y;
+			this.radius = 20;			
 			
 			this.period = period;
 			
@@ -32,11 +36,35 @@
 		
 		asTimedOperation.call(Generator.prototype, { });
 		
+		asRenderableElement.call(Generator.prototype, { renderer : document });
 
 
-
-
-
+		
+		var Delay = function(name, x, y, delay) {
+				
+			var self = this;
+		
+			this.x = x;
+			this.y = y;
+			this.radius = 10;
+		
+			this._outputs = [];
+			
+			this.onInput = function() {
+				
+				setTimeout(function() {
+				
+					self.fire();
+				}, delay);
+			};
+		}
+		
+		asOutputProvider.call(Delay.prototype, { number : 1 });		
+		
+		asInputAccepter.call(Delay.prototype, { number : 1 });		
+		
+		asRenderableElement.call(Delay.prototype, { renderer : document });
+		
 
 		
 		var Acceptor = function(name, x, y) {
@@ -64,25 +92,56 @@
 		
 		
 		
-		var leaf = new Acceptor('leaf', 100, 100);
+		var leaf = new Acceptor('leaf', 150, 400);
 		
-		var wire = new Acceptor('wire', 100, 200);
+		
+		
+		var wire = new Delay('wire', 100, 300, 100);
 		wire.pipeTo(leaf);
 
-		var gen = new Generator(1000);
-		gen.pipeTo(wire);
+		var wire2 = new Delay('wire2', 100, 200, 150);
+		wire2.pipeTo(wire);
+		
+		var wire3 = new Delay('wire3', 100, 100, 90);
+		wire3.pipeTo(wire2);
+		
+		var gen = new Generator(1000, 100, 50);
+		gen.pipeTo(wire3);
 		gen.start();
-		
-		
-		
-		var gen2 = new Generator(750);
-		gen2.pipeTo(leaf);
-		gen2.start();
-		
 		
 		
 		leaf.render();
 		wire.render();
+		wire2.render();
+		wire3.render();
+		gen.render();
+		
+		
+		
+		
+		
+		var nwire = new Delay('wire', 200, 300, 100);
+		nwire.pipeTo(leaf);
+
+		var nwire2 = new Delay('wire2', 200, 200, 150);
+		nwire2.pipeTo(nwire);
+		
+		var nwire3 = new Delay('wire3', 200, 100, 80);
+		nwire3.pipeTo(nwire2);
+		
+		var ngen = new Generator(670, 200, 50);
+		ngen.pipeTo(nwire3);
+		ngen.start();
+		
+		
+		nwire.render();
+		nwire2.render();
+		nwire3.render();
+		ngen.render();		
+		
+		
+		
+		
 		
 		
 		

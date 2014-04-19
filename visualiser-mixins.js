@@ -62,16 +62,23 @@ var asRenderableElement = function(options) {
 		}
 	};
 	
+	var timeout;
+	
 	this.flash = function() {
 	
 		var self = this;
 	
 		this.el.style.backgroundColor = '#f00';
 		
+		if(timeout) {
+		
+			clearTimeout(timeout);
+		}
+		
 		setTimeout(function(){
 		
 			self.el.style.backgroundColor = '#fff';
-		}, 500);
+		}, 100);
 	
 	};
 	
